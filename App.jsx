@@ -8,7 +8,7 @@ const supplements = [
   { name: 'Казеин', daily: true, dose: '1 порция (30 г)', timing: 'Перед сном' },
   { name: 'Цинк', daily: false, dose: '1 капсула (50 мг)', interval: 2, timing: 'Вечером после еды' },
   { name: 'Глютамин', daily: false, dose: '5 г (по необходимости)', timing: 'После тренировки или перед сном' },
-  { name: 'Beauty-витамины', daily: true, dose: '1–2 капсулы', cycle: [90, 30], timing: 'Утром после еды' },
+  { name: 'Витамины', daily: true, dose: '1–2 капсулы', cycle: [90, 30], timing: 'Утром после еды' },
   { name: '5-HTP', daily: true, dose: '1 капсула (50 мг)', cycle: [30, 14], optional: true, timing: 'За 30–60 мин до сна' },
 ];
 
