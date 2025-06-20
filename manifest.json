@@ -1,0 +1,16 @@
+{
+  "name": "Трекер добавок",
+  "short_name": "Добавки",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "Учет спортивных добавок",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff"
+}
