@@ -31,11 +31,10 @@ export default function App() {
     setChecked(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
- const getVisibleDays = () => {
-  const pastDays = 7; // Сколько дней назад показывать
+const getVisibleDays = () => {
   return Array.from({ length: daysToShow }, (_, i) => {
     const d = new Date(today);
-    d.setDate(today.getDate() - pastDays + i);
+    d.setDate(today.getDate() + i);
     return d.toISOString().split('T')[0];
   });
 };
