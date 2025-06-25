@@ -6,7 +6,7 @@ const supplements = [
   { name: 'Креатин', daily: true, dose: '3–5 г (2–4 капсулы)', cycle: [60, 30], timing: 'После тренировки' },
   { name: 'Казеин', daily: true, dose: '1 порция (30 г)', timing: 'Перед сном' },
   { name: 'Глютамин', daily: true, dose: '5 г', timing: 'Перед сном' },
-  { name: 'Витамины, daily: true, dose: '1 таблетка', cycle: [60, 30], timing: 'После обеда' },
+  { name: 'Витамины', daily: true, dose: '1 таблетка', cycle: [60, 30], timing: 'После обеда' },
   { name: '5-HTP', daily: true, dose: '1 капсула (50 мг)', cycle: [30, 14], optional: true, timing: 'За 30–60 мин до сна' },
 ];
 
