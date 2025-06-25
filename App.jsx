@@ -31,13 +31,14 @@ export default function App() {
     setChecked(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const getVisibleDays = () => {
-    return Array.from({ length: daysToShow }, (_, i) => {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
-      return d.toISOString().split('T')[0];
-    });
-  };
+ const getVisibleDays = () => {
+  const pastDays = 7; // Сколько дней назад показывать
+  return Array.from({ length: daysToShow }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - pastDays + i);
+    return d.toISOString().split('T')[0];
+  });
+};
 
   const getTotalTaken = (name) => {
     return Object.keys(checked).filter(key => key.endsWith(`-${name}`) && checked[key]).length;
