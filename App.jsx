@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid
-} from 'recharts';
 
 const STORAGE_SUPPLEMENTS = 'supplements';
 const STORAGE_CHECKS = 'supplement-checks';
@@ -115,11 +112,6 @@ export default function App() {
     return Object.keys(checked).filter(key => key.endsWith(`-${name}`) && checked[key]).length;
   };
 
-  const supplementStats = supplements.map(s => ({
-    name: s.name,
-    count: getTotalTaken(s.name)
-  }));
-
   return (
     <div style={{ padding: '1rem', fontFamily: 'sans-serif' }}>
       <h2>Итого по добавкам:</h2>
@@ -145,14 +137,6 @@ export default function App() {
           onChange={(e) => setNotifyTime(e.target.value)}
         />
       </div>
-
-      <BarChart width={500} height={250} data={supplementStats} style={{ marginTop: '2rem' }}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Bar dataKey="count" fill="#8884d8" />
-      </BarChart>
 
       <hr style={{ margin: '1rem 0' }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
