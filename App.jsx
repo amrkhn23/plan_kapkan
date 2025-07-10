@@ -5,12 +5,14 @@ import {
 
 const STORAGE_SUPPLEMENTS = 'supplements';
 const STORAGE_CHECKS = 'supplement-checks';
+const STORAGE_NOTIFY_TIME = 'supplement-notify-time';
 const today = new Date();
-const daysToShow = 90;
 
 export default function App() {
   const [supplements, setSupplements] = useState([]);
   const [checked, setChecked] = useState({});
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [notifyTime, setNotifyTime] = useState('20:00');
 
   useEffect(() => {
     const savedSupplements = localStorage.getItem(STORAGE_SUPPLEMENTS);
@@ -23,7 +25,14 @@ export default function App() {
         { name: 'Казеин', daily: true, dose: '1 порция (30 г)', timing: 'Перед сном' },
         { name: 'Глютамин', daily: true, dose: '5 г', timing: 'Перед сном' },
         { name: 'Витамины', daily: true, dose: '1 таблетка', cycle: [60, 30], timing: 'После обеда' },
-        { name: '5-HTP', daily: true, dose: '1 капсула (50 мг)', cycle: [30, 14], optional: true, timing: 'За 30–60 мин до сна' },
+        {
+          name: 'Инозитол (B8)',
+          daily: true,
+          dose: '1 капсула (500 мг)',
+          cycle: [30, 14],
+          optional: true,
+          timing: 'Утром или перед сном'
+        },
       ];
       setSupplements(defaultSupplements);
       localStorage.setItem(STORAGE_SUPPLEMENTS, JSON.stringify(defaultSupplements));
@@ -31,6 +40,9 @@ export default function App() {
 
     const savedChecks = localStorage.getItem(STORAGE_CHECKS);
     if (savedChecks) setChecked(JSON.parse(savedChecks));
+
+    const savedTime = localStorage.getItem(STORAGE_NOTIFY_TIME);
+    if (savedTime) setNotifyTime(savedTime);
   }, []);
 
   useEffect(() => {
@@ -38,19 +50,32 @@ export default function App() {
   }, [checked]);
 
   useEffect(() => {
+    localStorage.setItem(STORAGE_NOTIFY_TIME, notifyTime);
+  }, [notifyTime]);
+
+  useEffect(() => {
     if (Notification.permission !== 'granted') Notification.requestPermission();
 
+    const [hours, minutes] = notifyTime.split(':').map(Number);
     const now = new Date();
-    const millisTill20 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 0) - now;
+    const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
+    const millisTillNotify = target - now;
+
     const timer = setTimeout(() => {
       const dateKey = new Date().toISOString().split('T')[0];
-      const missed = supplements.some(s => !checked[`${dateKey}-${s.name}`]);
-      if (missed && Notification.permission === 'granted') {
-        new Notification('Напоминание', { body: 'Вы не отметили все добавки за сегодня.' });
+      const missedSupplements = supplements.filter(s => !checked[`${dateKey}-${s.name}`]);
+
+      if (missedSupplements.length && Notification.permission === 'granted') {
+        missedSupplements.forEach(s => {
+          new Notification('Напоминание', {
+            body: `${s.name}: ${s.dose} (${s.timing})`,
+          });
+        });
       }
-    }, millisTill20 > 0 ? millisTill20 : 0);
+    }, millisTillNotify > 0 ? millisTillNotify : 0);
+
     return () => clearTimeout(timer);
-  }, [checked, supplements]);
+  }, [checked, supplements, notifyTime]);
 
   const handleToggle = (date, name) => {
     const key = `${date}-${name}`;
@@ -79,9 +104,9 @@ export default function App() {
   };
 
   const getVisibleDays = () => {
-    return Array.from({ length: daysToShow }, (_, i) => {
+    return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(today);
-      d.setDate(today.getDate() + i);
+      d.setDate(today.getDate() + i + weekOffset * 7);
       return d.toISOString().split('T')[0];
     });
   };
@@ -112,6 +137,15 @@ export default function App() {
         <button type="submit">Добавить</button>
       </form>
 
+      <div style={{ marginTop: '1rem' }}>
+        <label>⏰ Время напоминания:</label>{' '}
+        <input
+          type="time"
+          value={notifyTime}
+          onChange={(e) => setNotifyTime(e.target.value)}
+        />
+      </div>
+
       <BarChart width={500} height={250} data={supplementStats} style={{ marginTop: '2rem' }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
@@ -121,6 +155,11 @@ export default function App() {
       </BarChart>
 
       <hr style={{ margin: '1rem 0' }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+        <button onClick={() => setWeekOffset(weekOffset - 1)}>← Пред. неделя</button>
+        <button onClick={() => setWeekOffset(weekOffset + 1)}>След. неделя →</button>
+      </div>
+
       {getVisibleDays().map(date => (
         <div key={date} style={{ marginBottom: '1rem', padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
           <h3>{new Date(date).toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' })}</h3>
